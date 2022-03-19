@@ -17,7 +17,7 @@ _addon = xbmcaddon.Addon()
 plugin = routing.Plugin()
 
 _baseurl = "https://xtv.cz/"
-_apiurl = "https://xtv.cz/api/v3/"
+_apiurl = "https://xtv.cz/api/v2/"
 
 
 @plugin.route("/list_shows/")
@@ -128,11 +128,11 @@ def get_list():
         )
     )
     count = 0
+    duration = 0
     listing = []
     for item in data["items"]:
         if item["host"] and item["premium"] == 0:
             desc = item["title"].strip()
-            dur = item["duration"]
             thumb = item["cover"]
             slug_url = item["slug"]
             slug_show = item["porad"]
@@ -147,9 +147,9 @@ def get_list():
             date = datetime.datetime(
                 *(time.strptime(item["published_at"], "%Y-%m-%d %H:%M:%S")[:6])
             ).strftime("%Y-%m-%d")
-            if dur:
-                l = dur.strip().split(":")
-                duration = 0
+
+            if 'duration' in item:
+                l = item['duration'].strip().split(":")
                 for pos, value in enumerate(l[::-1]):
                     duration += int(value) * 60**pos
             list_item = xbmcgui.ListItem(title_label)
