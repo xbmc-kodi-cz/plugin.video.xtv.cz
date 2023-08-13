@@ -38,8 +38,7 @@ def list_shows():
             show_id = str(
                 re.search(
                     "\((\d+)\)",
-                    str(info.find(
-                        "div", {"class": "porad-toggle"}).get("ng-click")),
+                    str(info.find("div", {"class": "porad-toggle"}).get("ng-click")),
                 ).group(1)
             )
 
@@ -50,8 +49,7 @@ def list_shows():
             list_item.setArt({"poster": thumb})
             listing.append(
                 (
-                    plugin.url_for(get_list, show_id=show_id,
-                                   category=2, page=0),
+                    plugin.url_for(get_list, show_id=show_id, category=2, page=0),
                     list_item,
                     True,
                 )
@@ -76,8 +74,7 @@ def list_archive():
     listing = []
     for porad in porady:
         url = porad.get("id")
-        show_title = (list([x for x in porady_dict if x["slug"] == url]))[
-            0]["title"]
+        show_title = (list([x for x in porady_dict if x["slug"] == url]))[0]["title"]
         info = soup.find("div", {"id": url, "class": "porad-wrapper"}).find(
             "div", {"class": "porad-info"}
         )
@@ -86,8 +83,7 @@ def list_archive():
         show_id = str(
             re.search(
                 "\((\d+)\)",
-                str(info.find(
-                    "div", {"class": "porad-toggle"}).get("ng-click")),
+                str(info.find("div", {"class": "porad-toggle"}).get("ng-click")),
             ).group(1)
         )
 
@@ -113,8 +109,7 @@ def get_list():
     xbmcplugin.setContent(plugin.handle, "episodes")
     show_id = plugin.args["show_id"][0] if "show_id" in plugin.args else ""
     page = int(plugin.args["page"][0] if "page" in plugin.args else 0)
-    category = int(plugin.args["category"][0]
-                   if "category" in plugin.args else 0)
+    category = int(plugin.args["category"][0] if "category" in plugin.args else 0)
     porady_dict = json.loads(get_page(_apiurl + "shows"))
     data = json.loads(
         get_page(
@@ -142,14 +137,13 @@ def get_list():
             title = item["perex"].strip() if item["perex"] else item["host"]
             title_label = title
             if category == 1:
-                title_label = "[COLOR blue]{0}[/COLOR] · {1}".format(
-                    show_title, title)
+                title_label = "[COLOR blue]{0}[/COLOR] · {1}".format(show_title, title)
             date = datetime.datetime(
                 *(time.strptime(item["published_at"], "%Y-%m-%d %H:%M:%S")[:6])
             ).strftime("%Y-%m-%d")
 
-            if 'duration' in item:
-                l = item['duration'].strip().split(":")
+            if "duration" in item:
+                l = item["duration"].strip().split(":")
                 for pos, value in enumerate(l[::-1]):
                     duration += int(value) * 60**pos
             list_item = xbmcgui.ListItem(title_label)
@@ -164,12 +158,11 @@ def get_list():
                     "premiered": date,
                 },
             )
-            list_item.setArt({"icon": thumb})
+            list_item.setArt({"thumb": thumb})
             list_item.setProperty("IsPlayable", "true")
             listing.append(
                 (
-                    plugin.url_for(
-                        get_video, slug_show=slug_show, slug_url=slug_url),
+                    plugin.url_for(get_video, slug_show=slug_show, slug_url=slug_url),
                     list_item,
                     False,
                 )
@@ -180,8 +173,7 @@ def get_list():
         list_item.setArt({"icon": "DefaultFolder.png"})
         listing.append(
             (
-                plugin.url_for(get_list, show_id=show_id,
-                               category=1, page=page + 1),
+                plugin.url_for(get_list, show_id=show_id, category=1, page=page + 1),
                 list_item,
                 True,
             )
@@ -204,7 +196,8 @@ def get_video():
     stream_data = soup.find("div", {"id": "xtvplayer"})["data-player-config"]
     stream_url = json.loads(base64.b64decode(stream_data))["dataProvider"][
         "sourceWithFallbacks"
-    ][0][0]["url"]
+    ][1][0]["url"]
+
     list_item = xbmcgui.ListItem(path=stream_url)
     xbmcplugin.setResolvedUrl(plugin.handle, True, list_item)
     xbmcplugin.endOfDirectory(plugin.handle)
@@ -231,7 +224,7 @@ def get_page(url):
     r = requests.get(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:98.0) Gecko/20100101 Firefox/98.0"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0"
         },
     )
     return r.content
