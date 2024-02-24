@@ -193,12 +193,10 @@ def get_video():
         ),
         "html.parser",
     )
-    stream_data = soup.find("div", {"id": "xtvplayer"})["data-player-config"]
-    stream_url = json.loads(base64.b64decode(stream_data))["dataProvider"][
-        "sourceWithFallbacks"
-    ][1][0]["url"]
+    stream_data = soup.find("div", {"id": "xtvplayer"})["data-playerjs-config"]
+    stream_url = json.loads(base64.b64decode(stream_data))["file"].split(" or ")
 
-    list_item = xbmcgui.ListItem(path=stream_url)
+    list_item = xbmcgui.ListItem(path=stream_url[0])
     xbmcplugin.setResolvedUrl(plugin.handle, True, list_item)
     xbmcplugin.endOfDirectory(plugin.handle)
 
@@ -224,7 +222,7 @@ def get_page(url):
     r = requests.get(
         url,
         headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/117.0"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:124.0) Gecko/20100101 Firefox/124.0"
         },
     )
     return r.content
